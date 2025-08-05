@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Accidents - AcciGuard</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="predict.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .predict-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        .map-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        .form-label {
+            color: white;
+            font-weight: 500;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .file-upload-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .file-upload-container small {
+            display: block;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">ACCI-GUARD</div>
+
+        <div class="navbar">
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="traffic.html">Traffic Analysis</a></li>
+                <li><a href="road.html">Road Conditions</a></li>
+                <li><a href="accidents.html">Accident Reports</a></li>
+                <li><a href="predict.html" class="btn">Predict Accidents</a></li>
+                <!-- <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </div>
+    </header>
+
+    <section id="predict" class="predict-analysis">
+        <h1>Predict Accidents</h1>
+        <p>The "Predict Accidents" page acts as a smart hub where users can actively contribute by submitting relevant
+            data about traffic conditions, accident, and road quality. Unlike traditional accident reports that only
+            provide historical insights, this feature leverages real-time data to generate predictions about potential
+            accident-prone zones. By analyzing multiple factors, it helps users anticipate risks and take preventive
+            measures before accidents occur. This proactive approach enhances road safety, empowering users with
+            valuable insights rather than just reflecting on past incidents.</p>
+    </section>
+
+    <div class="predict-container">
+        <div class="form-container">
+            <h2 class="text-center mb-4" style="color: white;">Accident Risk Prediction</h2>
+            <form class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" placeholder="Enter location (e.g., street address, city)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Time</label>
+                    <input type="time" class="form-control" id="time">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Weather</label>
+                    <select class="form-select" id="weather">
+                        <option value="clear">Clear</option>
+                        <option value="rainy">Rainy</option>
+                        <option value="foggy">Foggy</option>
+                        <option value="snowy">Snowy</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Road Condition</label>
+                    <select class="form-select" id="roadCondition">
+                        <option value="good">Good</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="poor">Poor</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Past Accidents</label>
+                    <input type="number" class="form-control" id="pastAccidents" min="0" value="0">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Traffic Density (1-100)</label>
+                    <input type="range" class="form-range" id="trafficDensity" min="1" max="100" value="50">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-white">Low</span>
+                        <span class="text-white">Medium</span>
+                        <span class="text-white">High</span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="file-upload-container">
+                        <label class="form-label">Upload Historical Data (Optional)</label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="fileUpload" accept=".csv, .json">
+                            <button class="btn btn-outline-light" type="button" onclick="processFile()">
+                                Process File
+                            </button>
+                        </div>
+                        <small class="text-light">Supported formats: CSV, JSON</small>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="predictAccident()">
+                        Predict Accident Risk
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="map-container">
+            <h2 class="text-center mb-4" style="color: white;">Risk Visualization Map</h2>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="predict.js"></script>
+</body>
+
+</html>

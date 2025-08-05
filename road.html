@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Conditions - AcciGuard</title>
+    <link rel="stylesheet" href="road.css">
+    <style>
+        /* Navbar styles from predict.css */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .nav-links li a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links .btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .nav-links .btn:hover {
+            background: #45a049;
+        }
+
+        /* Ensure no horizontal scrolling */
+        body, html {
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ACCI-GUARD</div>
+        <div class="navbar">
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="traffic.html">Traffic Analysis</a></li>
+                <li><a href="road.html">Road Conditions</a></li>
+                <li><a href="accidents.html">Accident Reports</a></li>
+                <li><a href="predict.html" class="btn">Predict Accidents</a></li>
+                <!-- <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Road Conditions</h1>
+        <!-- Add your road conditions content here -->
+    </div>
+</body>
+</html>

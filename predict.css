@@ -1,0 +1,338 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem 2rem;
+    backdrop-filter: blur(10px);
+}
+
+/* Logo Styling */
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.nav-links li a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Predict Accidents Button */
+.nav-links .btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.nav-links .btn:hover {
+    background: #45a049;
+}
+
+.predict-analysis {
+    padding: 2rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.predict-analysis h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.predict-analysis p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+/* Ensure no horizontal scrolling */
+body, html {
+    overflow-x: hidden;
+}
+
+/* Form Container */
+.predict-form {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Titles */
+.predict-form h2 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    /* font: white; */
+}
+
+ /* Label Styling */
+ .form-label {
+    font-weight: 600;
+    color: white;
+    margin-left: 30px;
+
+}
+
+/* Input Styling */
+.form-control, .form-select, .form-range {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select option {
+    background: #16213e;
+    color: white;
+}
+
+.form-range {
+    height: 5px;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #4CAF50;
+}
+
+.form-range::-moz-range-thumb {
+    background: #4CAF50;
+}
+
+.form-range::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.form-range::-moz-range-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    /* width: 200px; */
+    text-align: center;
+    margin: 50px auto;
+    margin-left: 644px;
+
+}
+
+/* Label Styling */
+.file-upload label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* File Input Custom Styling */
+.file-upload input {
+    display: none;
+}
+
+/* Custom Upload Button */
+.upload-btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.upload-btn:hover {
+    background-color: #2563eb;
+}
+
+ /* Submit Button */
+ .btn-primary {
+    background: #4CAF50;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+ /* Responsive Grid */
+ .row.g-3 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-md-4 {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        width: 100%;
+    }
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .predict-container {
+        padding: 10px;
+    }
+
+    .form-container, .map-container {
+        padding: 15px;
+    }
+}
+
+
+/* Style for Map Section */
+.map-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+     margin: 20px 0; /*Adds spacing around the section */
+}
+
+#map {
+    width: 80%;
+    height: 400px; /*Adjust height as needed */
+    border-radius: 10px; /*Smooth rounded corners */
+    border: 2px solid #866a6a; /*Subtle border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /*Soft shadow effect */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.container h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.map-container {
+    width: 90%; /* Adjust width for a responsive look */
+    height: calc(100vh - 100px); /* Dynamic height */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Move Leaflet zoom controls */
+/* Adjust Zoom Control Position */
+.leaflet-control-zoom {
+    top: 70px !important;  /* Adjust this value based on navbar height */
+    left: 20px !important;
+    z-index: 1000; /* Ensure it stays above other elements */
+}
+
+.alert {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    backdrop-filter: blur(10px);
+}
+
+.alert-success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #ffffff;
+}
+
+.alert-warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ffffff;
+}
+
+.alert-danger {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ffffff;
+}

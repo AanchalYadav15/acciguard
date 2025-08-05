@@ -1,0 +1,4 @@
+location,time_of_day,weather_condition,traffic_density,road_condition,historical_incidents,latitude,longitude
+"Main Street & 5th Avenue",peak_morning,rain,high,fair,7,28.6139,77.2090
+"Highway 101 Exit 25",night,clear,medium,good,3,28.7041,77.1025
+"School Zone - Central District",peak_morning,clear,very high,good,2,28.6523,77.1585

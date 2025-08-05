@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Risk Accident Areas</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Override background styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        body {
+            background-image: url(image/bgimage.jpg);
+            background-size: cover;
+            background-attachment: fixed; /* Keep background fixed while scrolling */
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            z-index: -1;
+        }
+
+        /* Adjust text colors for better visibility */
+        .high-risk-table th {
+            background-color: #009879;
+            color: white;
+        }
+
+        .high-risk-table td {
+            color: #00172d;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            color: #00172d;
+        }
+
+        .stat-card h3 {
+            color: #009879;
+        }
+
+        .recommendations {
+            background: rgba(255, 255, 255, 0.9);
+            color: #00172d;
+        }
+
+        .recommendations h3 {
+            color: #009879;
+        }
+
+        .graph-container {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .header h1, .header p {
+            color: #00172d;
+        }
+
+        /* Adjust body padding for fixed header */
+        body {
+            padding-top: 80px;
+        }
+
+        .high-risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .high-risk-table th,
+        .high-risk-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .high-risk-table th {
+            background-color: #009879;
+            color: white;
+            font-weight: bold;
+        }
+
+        .high-risk-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .risk-very-high {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .risk-high {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .risk-medium {
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        .risk-low {
+            color: #008000;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .refresh-time {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            color: #009879;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .filters {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .filters select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .recommendations {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .recommendations h3 {
+            color: #009879;
+            margin-bottom: 10px;
+        }
+
+        .recommendations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .recommendations li:before {
+            content: "•";
+            color: #009879;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Additional responsive styles */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .high-risk-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters select {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading:after {
+            content: "Loading...";
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: "Loading.  "; }
+            40% { content: "Loading.. "; }
+            60% { content: "Loading..."; }
+            80% { content: "Loading...."; }
+            100% { content: "Loading....."; }
+        }
+
+        /* Connection status */
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Animation for new data */
+        @keyframes highlight {
+            0% { background-color: #ffeb3b; }
+            100% { background-color: transparent; }
+        }
+
+        .highlight {
+            animation: highlight 2s ease-out;
+        }
+
+        .graph-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .graph-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .graph-header select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .graph-container {
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            .graph-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .graph-header select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ACCI-GUARD</div>
+        <div class="navbar">
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="traffic.html">Traffic Analysis</a></li>
+                <li><a href="road.html">Road Conditions</a></li>
+                <li><a href="accidents.html">Accident Reports</a></li>
+                <li><a href="predict.html" class="btn">Predict Accidents</a></li>
+                <!-- <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="header">
+            <h1>High Risk Accident Areas</h1>
+            <p>Real-time monitoring of accident-prone locations</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total High Risk Areas</h3>
+                <p id="totalHighRisk">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Risk Score</h3>
+                <p id="avgRiskScore">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Most Common Factor</h3>
+                <p id="commonFactor">-</p>
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <div class="graph-header">
+                <h3>Risk Score Trends</h3>
+                <select id="timeRange">
+                    <option value="24">Last 24 Hours</option>
+                    <option value="48">Last 48 Hours</option>
+                    <option value="168">Last Week</option>
+                </select>
+            </div>
+            <canvas id="riskTrendChart"></canvas>
+        </div>
+
+        <div class="filters">
+            <label for="riskFilter">Filter by Risk Level:</label>
+            <select id="riskFilter">
+                <option value="all">All Levels</option>
+                <option value="Very High">Very High</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+        </div>
+
+        <div class="refresh-time" id="lastUpdated">
+            Last updated: <span></span>
+        </div>
+
+        <div class="loading" id="loadingIndicator"></div>
+
+        <table class="high-risk-table">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Risk Level</th>
+                    <th>Risk Score</th>
+                    <th>Traffic Density</th>
+                    <th>Weather</th>
+                    <th>Road Condition</th>
+                    <th>Time of Day</th>
+                    <th>Historical Incidents</th>
+                </tr>
+            </thead>
+            <tbody id="highRiskTableBody">
+                <!-- Data will be populated dynamically -->
+            </tbody>
+        </table>
+
+        <div class="recommendations" id="recommendationsSection">
+            <h3>Key Recommendations</h3>
+            <ul id="recommendationsList">
+                <!-- Recommendations will be populated dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Chart.js
+        let riskTrendChart = null;
+
+        function initializeChart(data) {
+            const ctx = document.getElementById('riskTrendChart').getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (riskTrendChart) {
+                riskTrendChart.destroy();
+            }
+
+            // Process data for the chart
+            const sortedData = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            const labels = sortedData.map(d => {
+                const date = new Date(d.timestamp);
+                return date.toLocaleTimeString();
+            });
+            const scores = sortedData.map(d => d.risk_score);
+
+            // Create new chart
+            riskTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Risk Score',
+                        data: scores,
+                        borderColor: '#009879',
+                        backgroundColor: 'rgba(0, 152, 121, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Risk Score: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risk Score'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load data from localStorage
+        function loadStoredData() {
+            const storedData = localStorage.getItem('highRiskData');
+            const lastUpdated = localStorage.getItem('lastUpdated');
+
+            if (storedData && lastUpdated) {
+                const data = JSON.parse(storedData);
+                updateHighRiskAreas(data);
+                initializeChart(data);
+
+                // Update last updated time
+                const lastUpdateDate = new Date(lastUpdated);
+                document.querySelector('#lastUpdated span').textContent = lastUpdateDate.toLocaleString();
+
+                return data;
+            }
+            return null;
+        }
+
+        // Function to update statistics
+        function updateStats(data) {
+            const highRiskCount = data.filter(area =>
+                area.risk_level === "High" || area.risk_level === "Very High"
+            ).length;
+
+            const avgScore = Math.round(
+                data.reduce((acc, area) => acc + area.risk_score, 0) / data.length
+            );
+
+            // Count risk factors
+            const factorCounts = {
+                weather: {},
+                road: {},
+                time: {},
+                traffic: {}
+            };
+
+            data.forEach(area => {
+                const factors = area.risk_factors;
+
+                // Count weather conditions
+                if (!factorCounts.weather[factors.weather_condition]) {
+                    factorCounts.weather[factors.weather_condition] = 0;
+                }
+                factorCounts.weather[factors.weather_condition]++;
+
+                // Count road conditions
+                if (!factorCounts.road[factors.road_condition]) {
+                    factorCounts.road[factors.road_condition] = 0;
+                }
+                factorCounts.road[factors.road_condition]++;
+
+                // Count time periods
+                if (!factorCounts.time[factors.time_of_day]) {
+                    factorCounts.time[factors.time_of_day] = 0;
+                }
+                factorCounts.time[factors.time_of_day]++;
+            });
+
+            // Find most common factor
+            const getMostCommon = (obj) => {
+                return Object.entries(obj).sort((a, b) => b[1] - a[1])[0][0];
+            };
+
+            const mostCommonWeather = getMostCommon(factorCounts.weather);
+            const mostCommonRoad = getMostCommon(factorCounts.road);
+            const mostCommonTime = getMostCommon(factorCounts.time);
+
+            // Update statistics display
+            document.getElementById('totalHighRisk').textContent = highRiskCount;
+            document.getElementById('avgRiskScore').textContent = avgScore;
+            document.getElementById('commonFactor').textContent =
+                `${mostCommonWeather} weather, ${mostCommonTime}`;
+        }
+
+        // Function to update recommendations
+        function updateRecommendations(data) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+
+            // Collect all recommendations with their frequency
+            const recommendationCounts = {};
+            data.forEach(area => {
+                area.recommendations.forEach(rec => {
+                    if (!recommendationCounts[rec]) {
+                        recommendationCounts[rec] = 0;
+                    }
+                    recommendationCounts[rec]++;
+                });
+            });
+
+            // Sort recommendations by frequency
+            const sortedRecommendations = Object.entries(recommendationCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5); // Top 5 recommendations
+
+            // Display recommendations
+            sortedRecommendations.forEach(([rec, count]) => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recommendationsList.appendChild(li);
+            });
+        }
+
+        // Function to update the table with new data
+        function updateHighRiskAreas(data) {
+            if (!data || data.length === 0) {
+                document.getElementById('highRiskTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px;">
+                            No data available
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const tableBody = document.getElementById('highRiskTableBody');
+            const riskFilter = document.getElementById('riskFilter').value;
+
+            // Filter data based on selected risk level
+            const filteredData = riskFilter === 'all'
+                ? data
+                : data.filter(area => area.risk_level === riskFilter);
+
+            tableBody.innerHTML = '';
+
+            filteredData.forEach(area => {
+                const row = document.createElement('tr');
+                const riskClass = getRiskLevelClass(area.risk_level);
+
+                row.innerHTML = `
+                    <td>${area.location}</td>
+                    <td class="${riskClass}">${area.risk_level}</td>
+                    <td>${area.risk_score}</td>
+                    <td>${area.risk_factors.traffic_density}</td>
+                    <td>${area.risk_factors.weather_condition}</td>
+                    <td>${area.risk_factors.road_condition}</td>
+                    <td>${area.risk_factors.time_of_day}</td>
+                    <td>${area.risk_factors.historical_incidents}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update statistics and recommendations
+            updateStats(data);
+            updateRecommendations(data);
+        }
+
+        // Function to get risk level class
+        function getRiskLevelClass(riskLevel) {
+            switch(riskLevel.toLowerCase()) {
+                case 'very high': return 'risk-very-high';
+                case 'high': return 'risk-high';
+                case 'medium': return 'risk-medium';
+                case 'low': return 'risk-low';
+                default: return '';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load stored data
+            const data = loadStoredData();
+
+            if (!data) {
+                document.getElementById('highRiskTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px;">
+                            No prediction data available. Please process data in the Predict Accidents page first.
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Add event listener for risk level filter
+            document.getElementById('riskFilter').addEventListener('change', () => {
+                const data = loadStoredData();
+                if (data) {
+                    updateHighRiskAreas(data);
+                }
+            });
+
+            // Time range change handler
+            document.getElementById('timeRange').addEventListener('change', () => {
+                const data = loadStoredData();
+                if (data) {
+                    updateHighRiskAreas(data);
+                    initializeChart(data);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

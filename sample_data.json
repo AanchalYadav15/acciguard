@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "location": "Main Street & 5th Avenue",
+            "time_of_day": "peak_morning",
+            "weather_condition": "rain",
+            "traffic_density": "high",
+            "road_condition": "fair",
+            "historical_incidents": 7,
+            "latitude": 28.6139,
+            "longitude": 77.2090
+        },
+        {
+            "location": "Highway 101 Exit 25",
+            "time_of_day": "night",
+            "weather_condition": "clear",
+            "traffic_density": "medium",
+            "road_condition": "good",
+            "historical_incidents": 3,
+            "latitude": 28.7041,
+            "longitude": 77.1025
+        }
+    ]
+}

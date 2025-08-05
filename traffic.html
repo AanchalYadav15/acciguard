@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Analysis - AcciGuard</title>
+    <link rel="stylesheet" href="traffic.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo">ACCI-GUARD</div>
+
+        <div class="navbar">
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="traffic.html">Traffic Analysis</a></li>
+                <li><a href="road.html">Road Conditions</a></li>
+                <li><a href="accidents.html">Accident Reports</a></li>
+                <li><a href="predict.html" class="btn">Predict Accidents</a></li>
+                <!-- <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </div>
+    </header>
+
+    <section id="traffic" class="traffic-analysis">
+        <h1>Traffic Analysis</h1>
+        <p>Real-Time & Historical Data</p>
+    </section>
+
+    <section>
+        <div class="conatiner">
+            <div class="map">
+                <h2>Traffic Map</h2>
+                <p>Live Traffic Data from OpenStreetMap</p>
+
+                <div class="link">
+                    <iframe width="425" height="350"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=72.5856399536133%2C18.869255151707538%2C73.02715301513673%2C19.077044058245026&amp;layer=mapnik"
+                        style="border: 1px solid black"></iframe>
+
+                    <br />
+                    <small><a href="https://www.openstreetmap.org/?#map=12/18.9732/72.8064">View Larger Map</a></small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="traffic-chart">
+            <h2>Real-Time Traffic Congestion</h2>
+            <canvas id="trafficChart"></canvas>
+
+            <script>
+                let ctx = document.getElementById('trafficChart').getContext('2d');
+                let trafficData = {
+                    labels: ["0s", "5s", "10s", "15s", "20s"],
+                    datasets: [{
+                        label: 'Congestion Level (%)',
+                        data: [30, 40, 45, 50, 60], // Initial data
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2
+                    }]
+                };
+
+                let trafficChart = new Chart(ctx, {
+                    type: 'line',
+                    data: trafficData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                function updateTrafficChart() {
+                    let newTime = `${trafficData.labels.length * 5}s`;
+                    let newCongestion = Math.floor(Math.random() * 100); // Random congestion percentage
+                    trafficData.labels.push(newTime);
+                    trafficData.datasets[0].data.push(newCongestion);
+
+                    if (trafficData.labels.length > 10) {
+                        trafficData.labels.shift();
+                        trafficData.datasets[0].data.shift();
+                    }
+
+                    trafficChart.update();
+                }
+
+                setInterval(updateTrafficChart, 5000); // Update every 5 seconds
+            </script>
+        </div>
+    </section>
+</body>
+
+</html>
